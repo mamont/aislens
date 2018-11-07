@@ -3,13 +3,13 @@ package info.hntr.aislens
 import android.Manifest
 import android.content.Context
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.graphics.SurfaceTexture
 import android.hardware.camera2.*
 import android.os.Handler
 import android.os.HandlerThread
 import android.os.Looper
 import android.view.*
+import androidx.appcompat.app.AppCompatActivity
 import com.tbruyelle.rxpermissions2.RxPermissions
 import info.hntr.aislens.opengl.DefaultCameraRenderer
 import info.hntr.aislens.opengl.EGLSurfaceTextureListener
