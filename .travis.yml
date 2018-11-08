@@ -1,4 +1,8 @@
 language: android
+
+env:
+  - GRADLE_VERSION=4.10.2
+
 android:
   components:
     - platform-tools
