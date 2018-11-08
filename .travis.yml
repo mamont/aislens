@@ -1,7 +1,7 @@
 language: android
 
-env:
-  - GRADLE_VERSION=5.0-milestone-1
+before_install:
+  - chmod +x gradlew
 
 android:
   components:
