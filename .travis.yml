@@ -1,7 +1,7 @@
 language: android
 
 env:
-  - GRADLE_VERSION=4.10.2
+  - GRADLE_VERSION=5.0-milestone-1
 
 android:
   components:
