@@ -8,5 +8,9 @@ android:
     - android-28
     - sys-img-armeabi-v7a-android-28
 
-  before_install:
-    - chmod +x gradlew
+
+before_install:
+  - chmod +x gradlew
+
+script:
+  - "./gradlew clean build connectedCheck -PdisablePreDex --stacktrace"
