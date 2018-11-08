@@ -1,8 +1,5 @@
 language: android
 
-before_install:
-  - chmod +x gradlew
-
 android:
   components:
     - platform-tools
@@ -10,3 +7,6 @@ android:
     - build-tools-28.0.0
     - android-28
     - sys-img-armeabi-v7a-android-28
+
+  before_install:
+    - chmod +x gradlew
