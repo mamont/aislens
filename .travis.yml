@@ -9,7 +9,7 @@ android:
     - sys-img-armeabi-v7a-android-28
 
 
-before_script:
+before_install:
   - chmod +x gradlew
 
 script:
