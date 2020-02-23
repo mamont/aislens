@@ -1,156 +1,74 @@
 package info.hntr.aislens
 
-import android.Manifest
-import android.content.Context
 import android.os.Bundle
-import android.graphics.SurfaceTexture
-import android.hardware.camera2.*
-import android.os.Handler
-import android.os.HandlerThread
-import android.os.Looper
-import android.view.*
+import android.text.InputType.TYPE_CLASS_TEXT
+import android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD
+import android.view.Gravity
+import android.widget.Button
+import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
-import com.tbruyelle.rxpermissions2.RxPermissions
-import info.hntr.aislens.opengl.DefaultCameraRenderer
-import info.hntr.aislens.opengl.EGLSurfaceTextureListener
-import info.hntr.aislens.opengl.TextureViewGLWrapper
+import org.jetbrains.anko.*
+import org.jetbrains.anko.sdk27.coroutines.onClick
 
 class MainActivity : AppCompatActivity() {
-
-    var cameraManager: CameraManager? = null
-    var cameraDevice: CameraDevice? = null
-    var session: CameraCaptureSession? = null
-    var surface: Surface? = null
-
-    lateinit var textureView: TextureView
-    var surfaceTexture: SurfaceTexture? = null
-
-    val backgroundThread = HandlerThread("bg")
-    lateinit var backgroundHandler: Handler
-
-    lateinit var textureViewGLWrapper: TextureViewGLWrapper
-
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        super.onCreate(savedInstanceState)
+        MainActivityUi().setContentView(this)
+    }
 
-        textureView = findViewById(R.id.texture_view) as TextureView
-        val defaultCameraRenderer = DefaultCameraRenderer(this)
+    fun tryLogin(ui: AnkoContext<MainActivity>, name: CharSequence?, password: CharSequence?) {
+        /*
+        ui.doAsync {
+            Thread.sleep(500)
 
-        textureViewGLWrapper = TextureViewGLWrapper(defaultCameraRenderer)
 
-        textureViewGLWrapper.setListener(object : EGLSurfaceTextureListener {
-            override fun onSurfaceTextureReady(texture: SurfaceTexture) {
-                surfaceTexture = texture
-                openCamera()
-            }
-        }, Handler(Looper.getMainLooper()))
-
-        backgroundThread.start()
-        backgroundHandler = Handler(backgroundThread.looper)
-
-        textureView.surfaceTextureListener = object : TextureView.SurfaceTextureListener {
-            override fun onSurfaceTextureAvailable(surface: SurfaceTexture, width: Int, height: Int) {
-                textureViewGLWrapper.onSurfaceTextureAvailable(surface, width, height)
-            }
-
-            override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture, width: Int, height: Int) {
-                textureViewGLWrapper.onSurfaceTextureSizeChanged(surface, width, height)
-            }
-
-            override fun onSurfaceTextureUpdated(surface: SurfaceTexture) {
-                textureViewGLWrapper.onSurfaceTextureUpdated(surface)
-            }
-
-            override fun onSurfaceTextureDestroyed(surface: SurfaceTexture): Boolean {
-                textureViewGLWrapper.onSurfaceTextureDestroyed(surface)
-                return true
-            }
-        }
-
-        RxPermissions(this)
-                .request(Manifest.permission.CAMERA)
-                .subscribe { granted ->
-                    if (!granted) {
-                        finish()
-                    } else {
-                        openCamera()
-                    }
+            activityUiThreadWithContext {
+                if (checkCredentials(name.toString(), password.toString())) {
+                    toast("Logged in! :)")
+                    startActivity<CountriesActivity>()
+                } else {
+                    toast("Wrong password :( Enter user:password")
                 }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        openCamera()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        closeCamera()
-    }
-
-
-    private fun openCamera() {
-        if (!textureView.isAvailable) return
-        if (surfaceTexture == null) return
-        if (cameraDevice != null) return
-
-        cameraManager = getSystemService(Context.CAMERA_SERVICE) as CameraManager
-        cameraManager!!.openCamera("0", object : CameraDevice.StateCallback() {
-            override fun onOpened(camera: CameraDevice) {
-                this@MainActivity.cameraDevice = cameraDevice
-                this@MainActivity.surface = Surface(surfaceTexture)
-                surfaceTexture?.setDefaultBufferSize(textureView.width, textureView.height)
-                val req = camera.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW)
-                req.addTarget(surface)
-
-                camera.createCaptureSession(listOf(surface), object : CameraCaptureSession.StateCallback() {
-                    override fun onConfigured(session: CameraCaptureSession) {
-                        req.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE)
-                        req.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON)
-                        req.set(CaptureRequest.CONTROL_AE_ANTIBANDING_MODE, CaptureRequest.CONTROL_AE_ANTIBANDING_MODE_AUTO)
-                        session.setRepeatingRequest(req.build(), null, null)
-                        this@MainActivity.session = session
-                    }
-
-                    override fun onConfigureFailed(session: CameraCaptureSession?) {
-                        error("onConfigure Failed")
-                    }
-                }, null)
             }
-
-            override fun onDisconnected(camera: CameraDevice?) {
-            }
-
-            override fun onError(camera: CameraDevice?, error: Int) {
-                error("camera open failed")
-            }
-        }, null)
-    }
-
-    private fun closeCamera() {
-        session?.close()
-        session = null
-        cameraDevice?.close()
-        cameraDevice = null
-        surfaceTexture = null
-    }
-
-    /**
-     * A native method that is implemented by the 'native-lib' native library,
-     * which is packaged with this application.
-     */
-    /*
-    external fun stringFromJNI(): String
-
-    companion object {
-
-        // Used to load the 'native-lib' library on application startup.
-        init {
-            System.loadLibrary("native-lib")
         }
+        */
     }
-    */
+
+    private fun checkCredentials(name: String, password: String) = name == "user" && password == "password"
 }
 
+class MainActivityUi : AnkoComponent<MainActivity> {
+    private val customStyle = { v: Any ->
+        when (v) {
+            is Button -> v.textSize = 26f
+            is EditText -> v.textSize = 24f
+        }
+    }
 
+    override fun createView(ui: AnkoContext<MainActivity>) = with(ui) {
+        verticalLayout {
+            padding = dip(32)
+
+            imageView(android.R.drawable.ic_menu_manage).lparams {
+                margin = dip(16)
+                gravity = Gravity.CENTER
+            }
+
+            val name = editText {
+                hintResource = R.string.name
+            }
+            val password = editText {
+                hintResource = R.string.password
+                inputType = TYPE_CLASS_TEXT or TYPE_TEXT_VARIATION_PASSWORD
+            }
+
+            button("Log in") {
+                onClick {
+                    ui.owner.tryLogin(ui, name.text, password.text)
+                }
+            }
+
+            // myRichView()
+        }.applyRecursively(customStyle)
+    }
+}
