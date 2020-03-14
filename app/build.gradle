@@ -5,7 +5,7 @@ apply plugin: 'androidx.navigation.safeargs'
 
 android {
     compileSdkVersion 28
-    buildToolsVersion '29.0.2'
+    buildToolsVersion '30.0.0 rc1'
     defaultConfig {
         applicationId "info.hntr.aislens"
         minSdkVersion 28
